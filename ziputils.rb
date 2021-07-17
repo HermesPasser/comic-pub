@@ -1,31 +1,33 @@
 require 'rubygems'
 require 'zip'
-# já que vou ter que add coisas isoladamentes la no comicpub.rb
+
 class Zipper
     def initialize(output)
-        @filename = output
-        @rubyzip_object = Zip::File.open(output, Zip::File::CREATE)
-        @rubyzip_object.close
+        @zip_obj = Zip::OutputStream.new(output)
+        @files = []
     end
 
-    def add_no_compreension(input_filepath, output_filepath)
-        Zip.default_compression = 0
-        Zip::File.open(@filename) do |zipfile|
-            zipfile.add(output_filepath, input_filepath)
-        end
+    def store(input_filepath, output_filepath)
+        @zip_obj.put_next_entry(output_filepath, nil, nil, Zip::Entry::STORED, Zlib::NO_COMPRESSION)
+        @zip_obj.write IO.read(input_filepath)
     end
 
     def add_dir(dirpath, output_filepath)
-        # Zip.default_compression = 7
-        Zip::File.open(@filename) do |zipfile|
-            Dir["#{dirpath}/**/**"].each do |file|
-                # relative to the 'root' epub zip folder, eg.
-                # c:\tempfile\foo\file.txt => foo\file.txt
+        Dir["#{dirpath}/**/**"].each do |file|
+            # relative to the 'root' epub zip folder, eg.
+            # c:\tempfile\foo\file.txt => foo\file.txt
+            filepath_relative = File.join(output_filepath, File.basename(file))
 
-                filepath_relative = File.join(output_filepath, File.basename(file))
-                p file, filepath_relative
-                zipfile.add(filepath_relative, file)
-            end
+            puts "\tsaving #{file} as #{filepath_relative}"
+            @files.append([file, filepath_relative])
         end
+    end
+
+    def close
+        @files.each do |file_location, filename|           
+            @zip_obj.put_next_entry(filename, nil, nil, Zip::Entry::DEFLATED, Zlib::BEST_COMPRESSION)
+            @zip_obj.write IO.read(file_location)
+        end
+        @zip_obj.close
     end
 end
