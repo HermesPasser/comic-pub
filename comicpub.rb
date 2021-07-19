@@ -74,13 +74,13 @@ end
 def create_epub(epub_name)
     epub_filename = Pathname.new(epub_name).sub_ext('').to_s + '.epub'
     folder = create_structure
-    p epub_filename
     
-    # zip_folder(folder, epub_filename)
+    puts("creating #{epub_filename}...")
     zip = Zipper.new epub_filename
-    zip.add_no_compreension File.join(folder, 'mimetype'), 'mimetype'
+    zip.store   File.join(folder, 'mimetype'), 'mimetype'
     zip.add_dir File.join(folder, 'META-INF'), 'META-INF'
     zip.add_dir File.join(folder, 'OEBPS'), 'OEBPS'
-    
+    zip.close
+    # loop  {}
     FileUtils.rm_r folder
 end

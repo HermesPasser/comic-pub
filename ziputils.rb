@@ -14,10 +14,12 @@ class Zipper
 
     def add_dir(dirpath, output_filepath)
         Dir["#{dirpath}/**/**"].each do |file|
-            # relative to the 'root' epub zip folder, eg.
-            # c:\tempfile\foo\file.txt => foo\file.txt
-            filepath_relative = File.join(output_filepath, File.basename(file))
+            next if File.directory? file
 
+            # relative to the 'root' zip folder, eg.
+            # c:\tempfile\foldertozip\foo\file.txt => foo\file.txt
+            filepath_relative = file[file.index(output_filepath), file.length]
+           
             puts "\tsaving #{file} as #{filepath_relative}"
             @files.append([file, filepath_relative])
         end
