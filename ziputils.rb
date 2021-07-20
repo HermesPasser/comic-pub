@@ -32,4 +32,15 @@ class Zipper
         end
         @zip_obj.close
     end
+
+    def self.unzip(zip_filepath, destination)
+        puts "unzipping #{zip_filepath}"
+        Zip::File.open(zip_filepath) do |zip_file|
+            zip_file.each do |f|
+                fpath = File.join(destination, f.name)
+                puts "\t#{f} => #{fpath}"
+                zip_file.extract(f, fpath)
+            end
+        end
+    end
 end
