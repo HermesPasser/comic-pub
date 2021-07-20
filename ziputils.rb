@@ -28,7 +28,7 @@ class Zipper
     def close
         @files.each do |file_location, filename|           
             @zip_obj.put_next_entry(filename, nil, nil, Zip::Entry::DEFLATED, Zlib::BEST_COMPRESSION)
-            @zip_obj.write IO.read(file_location)
+            @zip_obj.write IO.binread(file_location)
         end
         @zip_obj.close
     end
