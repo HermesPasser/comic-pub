@@ -1,2 +1,2 @@
 # comic-pub
-comitc to epub (hopefully)
+comic to epub (hopefully)
