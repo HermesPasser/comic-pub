@@ -1,5 +1,6 @@
 require_relative './ziputils'
 require_relative './strings'
+require_relative './oebps'
 require 'fileutils'
 require 'pathname'
 require 'tmpdir'
@@ -22,32 +23,8 @@ end
 def create_oebps_folder(root_epub_dir)
     oebps_dir = File.join(root_epub_dir, 'OEBPS')
     Dir.mkdir oebps_dir
-    Dir.mkdir File.join(oebps_dir, 'comic')
     Dir.mkdir File.join(oebps_dir, 'css')
-
-    open(File.join(oebps_dir, 'content.opf'), 'a+') do |f|
-        f.write($temp_content_opf_content)
-    end
-
-    # open(File.join(oebps_dir, 'toc.ncx'), 'a+') do |f|
-    #     f.write($temp_toc_contenxt)
-    # end
-    
-    open(File.join(oebps_dir, 'toc.xhtml'), 'a+') do |f|
-        f.write($temp_toc_content)
-    end
-    
-    # placeholder content
-    open(File.join(oebps_dir, 'comic', 'chapter_1.xhtml'), 'a+') do |f|
-        f.write($place_holder_main_content)
-    end
-
     open(File.join(oebps_dir, 'css', 'main.css'), 'a+') { |f| }
-
-    # since is not mandatory, let's think this out later
-    # open(File.join(oebps_dir, 'nav.ncx'), 'a+') do |f|
-        # nothing for now
-    # end
 end
 
 def create_structure()
@@ -61,7 +38,7 @@ def create_structure()
     #   comic/chapter_1.xhtml
     #   content.opf
     #   toc.xhtml
-    root_epub_dir = temp_dir = Dir.mktmpdir
+    root_epub_dir = Dir.mktmpdir
     puts("created temp dir #{root_epub_dir}")
 
     create_mimetype(root_epub_dir)
@@ -71,16 +48,63 @@ def create_structure()
     return root_epub_dir;
 end
 
-def create_epub(epub_name)
-    epub_filename = Pathname.new(epub_name).sub_ext('').to_s + '.epub'
-    folder = create_structure
+def unzip_cbz(zip_filename)
+    temp_dir = Dir.mktmpdir
+    # TODO: imgs may be inside of a root folder in the zip, deal with it
+    Zipper.unzip(zip_filename, temp_dir)
+    temp_dir
+end
+
+def process_cbz_imgs(img_folder, writer)
+    # TODO: deal with subfolders, for now we were putting all the imgs in img/
+    # but later each subfolder should be copied to /img/sub/ and the first img
+    # from each subfolder should be the start of a chapter
+    # There is the case that instead the imgs are zipped inside of a folder
+    i = 1
+    puts "adding images to epub..."
+    Dir.entries(img_folder).each do |file|
+        extension = File.extname(file)
+        
+        next if File.directory? file
+        unless ['.png', '.jpg', '.jpeg', '.gif'].include? extension
+            puts "\tignoring non image file #{file}"
+            next
+        end
+        
+        add_to_toc = i == 1 ? true : false
+        full_path = File.join(img_folder, file)
+        writer.add_page(full_path, '', add_to_toc, 'Chapter Name')
+        i += 1
+    end
+    writer
+end
+
+def create_epub(zip_filename)
+    path_no_ext = Pathname.new(zip_filename).sub_ext('').to_s 
+    epub_filename = path_no_ext + '.epub'
+    epub_temp_folder = create_structure
     
+    # unzip cbz and read the xmls here
+    # TODO: check if is not a folder before
+
+    zip_temp_dir = unzip_cbz(zip_filename)
+
+    writer = OEBPSWiter.new(File.join(epub_temp_folder, 'OEBPS'))
+    process_cbz_imgs(zip_temp_dir, writer)
+    writer.set_metadata(:title => File.basename(epub_filename))
+    writer.save
+    
+    # TODO: save xhml from writer
     puts("creating #{epub_filename}...")
     zip = Zipper.new epub_filename
-    zip.store   File.join(folder, 'mimetype'), 'mimetype'
-    zip.add_dir File.join(folder, 'META-INF'), 'META-INF'
-    zip.add_dir File.join(folder, 'OEBPS'), 'OEBPS'
+    zip.store   File.join(epub_temp_folder, 'mimetype'), 'mimetype'
+    zip.add_dir File.join(epub_temp_folder, 'META-INF'), 'META-INF'
+    zip.add_dir File.join(epub_temp_folder, 'OEBPS'), 'OEBPS'
     zip.close
-    # loop  {}
-    FileUtils.rm_r folder
+    rescue => exception
+        raise exception
+    ensure  
+        FileUtils.rm_r epub_temp_folder if epub_temp_folder != nil
+        FileUtils.rm_r zip_temp_dir if zip_temp_dir != nil
+        epub_filename
 end
