@@ -36,6 +36,9 @@ def parse_args
     kill_if("No cbz/rar/folder provided", fname == nil)
     kill_if("cbz/rar/folder does not exists", !File.exists?(fname) && !Dir.exists?(fname))
     options
+
+rescue OptionParser::InvalidOption => e
+    kill_if "\n#{e}. Use -h for help"
 end
 
 def main
