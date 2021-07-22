@@ -18,11 +18,14 @@ class OEBPSWiter
         @content = Nokogiri::XML($temp_content_opf_content)
         @toc = Nokogiri::XML.fragment($temp_toc_content) #::HTML is too much of a pain
         @dest_dir = dest_oebps_dir # since were going to create files we need to know where
-       
-        # TODO: maybe prevent anything from being add to @toc if is not visible
-        self.insert_to_spine('toc') if visible_toc
-    end
+        
+        @@left_spread = 'page-spread-left'
+        @@right_spread = 'page-spread-right'
+        @page_spread_direction = @left_spread
 
+        # TODO: maybe prevent anything from being add to @toc if is not visible
+        self.insert_to_spine('toc', false) if visible_toc
+    end
     
     def comic_folder
         'comic'
@@ -33,6 +36,18 @@ class OEBPSWiter
         # to_html replaces the Doctype with the html 4.0 version which is not valid in epub
         File.write(File.join(@dest_dir, 'content.opf'), @content.to_xml)
         File.write(File.join(@dest_dir, 'toc.xhtml'), @toc.to_xml)
+    end
+
+    def set_manga_mode(is_manga)
+        # epub trickery
+        mode = is_manga ? 'rtl' : 'ltr' 
+        @content.search('spine').first['page-progression-direction'] = mode
+        
+        # mobi trickery
+        mode = is_manga ? 'horizontal-rl' : 'horizontal-lr'
+        @content.xpath('//*[@name="primary-writing-mode"]').first['content'] = mode
+
+        @page_spread_direction = @@right_spread
     end
 
     def set_metadata(args)
@@ -86,10 +101,14 @@ private
         id = relative_path.gsub('/', '-').gsub('\\', '-')
         
         self.insert_to_manifest(File.extname(name), id, relative_path)
-        self.insert_to_spine(id)
+        self.insert_to_spine(id, true)
         self.insert_to_toc(relative_path, toc_name) if should_to_toc
         ensure
             file_obj.close if file_obj != nil
+    end
+    
+    def change_direction
+        @page_spread_direction = @page_spread_direction == @@left_spread ? @@right_spread : @@left_spread
     end
 
     def insert_to_manifest(extension, id, href)
@@ -101,11 +120,27 @@ private
         item_node
     end
 
-    def insert_to_spine(id)
+    def insert_to_spine(id, set_spread_direction)
         item_node = Nokogiri::XML::Node.new('itemref', @content)
         item_node['idref'] = id
-        item_node['linear'] = 'yes' #or no
-        # item_node['properties'] = page-spread-right or page-spread-left
+        item_node['linear'] = 'yes'
+        
+        # TODO: we will need to handle this in a more intelligent way
+        # when we start adding more pages (eg. an option when the big
+        # page is split in two, but the original big page is stil 
+        # in the doc, we need to make sure that the two spliten 
+        # pages match and maybe that the big page is the fist)
+        if set_spread_direction
+            # FIXME: setting this will break the convertion to 
+            # mobi if the  so let's worry about this later, error:
+            # Please specify the Original-resolution metadata value in the format WIDTH x HEIGHT
+            # Add a meta like this to fix: 
+            #  <meta name="original-resolution" content="WIDTHxHEIGHT" />
+            
+            # define if this is the left or right from a two-pages spread
+            # item_node['properties'] = @page_spread_direction 
+            # self.change_direction 
+        end
         @content.search('spine').first.add_child(item_node)
         item_node
     end

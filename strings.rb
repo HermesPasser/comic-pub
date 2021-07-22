@@ -20,7 +20,7 @@ $temp_content_opf_content = <<END
 		<meta id="cpub-modate" property="dcterms:modified">add</meta>
 		<meta name="fixed-layout" content="true" />
 		<meta name="book-type" content="comic" />
-		<meta name="primary-writing-mode" content="horizontal-rl" />
+		<meta name="primary-writing-mode" content="horizontal-lr" />
 		<meta name="zero-gutter" content="true" />
 		<meta name="zero-margin" content="true" />
 		<meta name="ke-border-color" content="#FFFFFF" />

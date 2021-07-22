@@ -28,6 +28,7 @@ def parse_args
         
         opt.on("-v", "--verbose LEVEL", Integer, "How detailed is the logging") { |v| $verbosity_level = v }
         opt.on("-o", "--output FILE", "Set non default output epub file location") { |o| options[:output] = validate_output_file(o) }
+        opt.on("-m", "--m", "Make the epub flows from right-to-left like a manga") { |o| options[:manga] = o }
         opt.on("-h", "--help", "Prints this message") { |o| kill_if(opt.help) }
     end.parse!
 
