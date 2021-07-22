@@ -79,9 +79,14 @@ def process_cbz_imgs(img_folder, writer)
     writer
 end
 
-def create_epub(zip_filename)
-    path_no_ext = Pathname.new(zip_filename).sub_ext('').to_s 
-    epub_filename = path_no_ext + '.epub'
+def create_epub(zip_filename, output=nil)
+    # TODO: drop all strings to use Pathnames only
+    if output == nil
+        path_no_ext = Pathname.new(zip_filename).sub_ext('').to_s 
+        epub_filename = path_no_ext + '.epub'
+    else
+        epub_filename = output.to_s
+    end
     epub_temp_folder = create_structure
     
     # unzip cbz and read the xmls here
