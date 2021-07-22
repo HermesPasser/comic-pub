@@ -60,7 +60,7 @@ private
         file_basename = File.basename(filename)
         absolute_dest = File.join(@dest_dir, destination)
         
-        puts "\tadding #{filename} to the oebps/#{destination}"
+        log "\tadding #{filename} to the oebps/#{destination}", 2
         FileUtils.mkdir_p absolute_dest if !Dir.exists? absolute_dest
         FileUtils.cp(filename, File.join(absolute_dest, file_basename))
 

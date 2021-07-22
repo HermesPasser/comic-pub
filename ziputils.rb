@@ -8,6 +8,7 @@ class Zipper
     end
 
     def store(input_filepath, output_filepath)
+        log "\t storing #{input_filepath} as #{output_filepath}", 2
         @zip_obj.put_next_entry(output_filepath, nil, nil, Zip::Entry::STORED, Zlib::NO_COMPRESSION)
         @zip_obj.write IO.read(input_filepath)
     end
@@ -20,7 +21,7 @@ class Zipper
             # c:\tempfile\foldertozip\foo\file.txt => foo\file.txt
             filepath_relative = file[file.index(output_filepath), file.length]
            
-            puts "\tsaving #{file} as #{filepath_relative}"
+            log "\tsaving #{file} as #{filepath_relative}", 2
             @files.append([file, filepath_relative])
         end
     end
@@ -34,11 +35,11 @@ class Zipper
     end
 
     def self.unzip(zip_filepath, destination)
-        puts "unzipping #{zip_filepath}"
+        log "unzipping #{zip_filepath}", 1
         Zip::File.open(zip_filepath) do |zip_file|
             zip_file.each do |f|
                 fpath = File.join(destination, f.name)
-                puts "\t#{f} => #{fpath}"
+                log "\t#{f} => #{fpath}", 2
                 zip_file.extract(f, fpath)
             end
         end

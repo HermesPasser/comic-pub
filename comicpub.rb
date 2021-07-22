@@ -39,7 +39,7 @@ def create_structure()
     #   content.opf
     #   toc.xhtml
     root_epub_dir = Dir.mktmpdir
-    puts("created temp dir #{root_epub_dir}")
+    log("created temp dir #{root_epub_dir}", 3)
 
     create_mimetype(root_epub_dir)
     create_meta_inf_folder(root_epub_dir)
@@ -61,13 +61,13 @@ def process_cbz_imgs(img_folder, writer)
     # from each subfolder should be the start of a chapter
     # There is the case that instead the imgs are zipped inside of a folder
     i = 1
-    puts "adding images to epub..."
+    log  "adding images to epub...", 1
     Dir.entries(img_folder).each do |file|
         extension = File.extname(file)
         
         next if File.directory? file
         unless ['.png', '.jpg', '.jpeg', '.gif'].include? extension
-            puts "\tignoring non image file #{file}"
+            log "\tignoring non image file #{file}", 2
             next
         end
         
@@ -95,7 +95,7 @@ def create_epub(zip_filename)
     writer.save
     
     # TODO: save xhml from writer
-    puts("creating #{epub_filename}...")
+    log("creating #{epub_filename}...", 1)
     zip = Zipper.new epub_filename
     zip.store   File.join(epub_temp_folder, 'mimetype'), 'mimetype'
     zip.add_dir File.join(epub_temp_folder, 'META-INF'), 'META-INF'
