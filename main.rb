@@ -45,7 +45,7 @@ def main
     puts("Comic pub 0.1 - The poor man's comic to epub converter.\nBy Douglas S. Lacerda <hermespaser@gmail.com> under GPLv3")
     ops = parse_args
 
-    epub_name = create_epub(ops[:filename], ops[:output])
+    epub_name = create_epub(ops)
 end
 
 main

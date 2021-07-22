@@ -79,15 +79,15 @@ def process_cbz_imgs(img_folder, writer)
     writer
 end
 
-def create_epub(zip_filename, output=nil)
+def create_epub(args)
     # TODO: drop all strings to use Pathnames only
-    if output == nil
-        path_no_ext = Pathname.new(zip_filename).sub_ext('').to_s 
+    if args[:output]
+        file_no_ext = File.basename(args[:output].sub_ext('').to_s)
+        epub_filename = args[:output].to_s
+    else
+        path_no_ext = Pathname.new(args[:filename]).sub_ext('').to_s 
         file_no_ext = File.basename(path_no_ext)
         epub_filename = file_no_ext + '.epub'
-    else
-        file_no_ext = File.basename(output.sub_ext('').to_s)
-        epub_filename = output.to_s
     end
 
     epub_temp_folder = create_structure
@@ -95,7 +95,7 @@ def create_epub(zip_filename, output=nil)
     # unzip cbz and read the xmls here
     # TODO: check if is not a folder before
 
-    zip_temp_dir = unzip_cbz(zip_filename)
+    zip_temp_dir = unzip_cbz(args[:filename])
 
     writer = OEBPSWiter.new(File.join(epub_temp_folder, 'OEBPS'))
     process_cbz_imgs(zip_temp_dir, writer)
