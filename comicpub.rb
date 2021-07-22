@@ -87,7 +87,7 @@ def create_epub(args)
     else
         path_no_ext = Pathname.new(args[:filename]).sub_ext('').to_s 
         file_no_ext = File.basename(path_no_ext)
-        epub_filename = file_no_ext + '.epub'
+        epub_filename = path_no_ext + '.epub'
     end
 
     epub_temp_folder = create_structure
