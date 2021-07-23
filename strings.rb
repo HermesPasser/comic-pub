@@ -82,7 +82,7 @@ $empty_img_html = <<END
         <title></title>
     </head>
     <body>
-        <img src="" />
+        <img height="100%" src="" />
     </body>
 </html> 
 END
