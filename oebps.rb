@@ -18,21 +18,22 @@ class OEBPSWiter
         @content = Nokogiri::XML($temp_content_opf_content)
         @toc = Nokogiri::XML.fragment($temp_toc_content) #::HTML is too much of a pain
         @dest_dir = dest_oebps_dir # since were going to create files we need to know where
-        
+        @visible_toc = visible_toc
+
         @@left_spread = 'page-spread-left'
         @@right_spread = 'page-spread-right'
         @page_spread_direction = @left_spread
-
-        # TODO: maybe prevent anything from being add to @toc if is not visible
-        self.insert_to_spine('toc', false) if visible_toc
     end
     
     def comic_folder
         'comic'
     end
 
-    def save
-        # Dir.mkdir @dest_dir
+    def save        
+        # TODO: maybe prevent anything from being add to @toc if is not visible
+        self.insert_to_spine('toc', false) if @visible_toc
+        @visible_toc = false
+        
         # to_html replaces the Doctype with the html 4.0 version which is not valid in epub
         File.write(File.join(@dest_dir, 'content.opf'), @content.to_xml)
         File.write(File.join(@dest_dir, 'toc.xhtml'), @toc.to_xml)
