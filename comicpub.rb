@@ -1,5 +1,5 @@
 require_relative './ziputils'
-require_relative './strings'
+require_relative './templates'
 require_relative './oebps'
 require 'fileutils'
 require 'pathname'

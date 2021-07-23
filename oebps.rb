@@ -1,4 +1,4 @@
-require_relative './strings'
+require_relative './templates'
 require 'securerandom'
 require 'fileutils'
 require 'nokogiri'
