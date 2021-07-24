@@ -81,21 +81,18 @@ end
 
 def create_epub(args)
     # TODO: drop all strings to use Pathnames only
+    input_filename = args[:filename]
     if args[:output]
-        file_no_ext = File.basename(args[:output].sub_ext('').to_s)
+        file_no_ext = File.basename(input_filename.sub_ext('').to_s)
         epub_filename = args[:output].to_s
     else
-        path_no_ext = Pathname.new(args[:filename]).sub_ext('').to_s 
+        path_no_ext = args[:filename].sub_ext('').to_s 
         file_no_ext = File.basename(path_no_ext)
         epub_filename = path_no_ext + '.epub'
     end
 
     epub_temp_folder = create_structure
-    
-    # unzip cbz and read the xmls here
-    # TODO: check if is not a folder before
-
-    zip_temp_dir = unzip_cbz(args[:filename])
+    zip_temp_dir = input_filename.directory? ? input_filename.to_s : unzip_cbz(input_filename)
 
     writer = OEBPSWiter.new(File.join(epub_temp_folder, 'OEBPS'))
     writer.set_manga_mode(args[:manga] || false)
@@ -110,10 +107,10 @@ def create_epub(args)
     zip.add_dir File.join(epub_temp_folder, 'META-INF'), 'META-INF'
     zip.add_dir File.join(epub_temp_folder, 'OEBPS'), 'OEBPS'
     zip.close
-    rescue => exception
-        raise exception
-    ensure  
-        FileUtils.rm_r epub_temp_folder if epub_temp_folder != nil
-        FileUtils.rm_r zip_temp_dir if zip_temp_dir != nil
-        epub_filename
+rescue => exception
+    raise exception
+ensure  
+    FileUtils.rm_r epub_temp_folder if epub_temp_folder != nil
+    FileUtils.rm_r zip_temp_dir if !input_filename.directory? && zip_temp_dir != nil
+    epub_filename
 end

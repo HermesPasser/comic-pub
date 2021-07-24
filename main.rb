@@ -29,12 +29,13 @@ def parse_args
         opt.on("-v", "--verbose LEVEL", Integer, "How detailed is the logging") { |v| $verbosity_level = v }
         opt.on("-o", "--output FILE", "Set non default output epub file location") { |o| options[:output] = validate_output_file(o) }
         opt.on("-m", "--m", "Make the epub flows from right-to-left like a manga") { |o| options[:manga] = o }
+        opt.on("--mobi", "Convert the epub to mobi. Kindlegen must be in the program folder") { |o| options[:mobi] = o }
         opt.on("--title NAME", "Set the epub title") { |o| options[:title] = o }
         opt.on("-h", "--help", "Prints this message") { |o| kill_if(opt.help) }
     end.parse!
 
     # handle positional args
-    options[:filename] = fname = ARGV.pop
+    options[:filename] = fname = Pathname.new(ARGV.pop)
     kill_if("No cbz/rar/folder provided", fname == nil)
     kill_if("cbz/rar/folder does not exists", !File.exists?(fname) && !Dir.exists?(fname))
     options
