@@ -12,6 +12,7 @@ comic-pub is simple and easy to use program to convert batch of images to epub w
  - ``-h, --help`` Prints this message
  - ``-m`` Make the epub flow from right-to-left like a manga
  - ``--title NAME`` Set the epub title. The default is the input name
+ - ``--mobi`` Convert to mobi and delete the .epub. Kindlegen must be in the program folder or PATH
 
 # Requirements
 

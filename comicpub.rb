@@ -107,10 +107,10 @@ def create_epub(args)
     zip.add_dir File.join(epub_temp_folder, 'META-INF'), 'META-INF'
     zip.add_dir File.join(epub_temp_folder, 'OEBPS'), 'OEBPS'
     zip.close
+    epub_filename
 rescue => exception
     raise exception
 ensure  
     FileUtils.rm_r epub_temp_folder if epub_temp_folder != nil
     FileUtils.rm_r zip_temp_dir if !input_filename.directory? && zip_temp_dir != nil
-    epub_filename
 end
