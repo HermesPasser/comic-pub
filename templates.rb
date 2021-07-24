@@ -71,8 +71,10 @@ $temp_toc_content = <<END
 </html>
 END
 
-# <!-- if we ever need to use css in this... -->
-# <!-- <link href="template.css" rel="stylesheet" type="text/css" /> -->
+# NOTE: the attr height should be a integer to be complete compliant with the standard
+# I'm letting be a % since this it will not break the epub and doning so we won't need
+# to bother about keeping the image or device size to make the images visible this way
+# for when convert the epub to mobi 
 
 $empty_img_html = <<END
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
