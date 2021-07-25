@@ -8,7 +8,7 @@ class Zipper
     end
 
     def store(input_filepath, output_filepath)
-        log "\t storing #{input_filepath} as #{output_filepath}", 2
+        log "\tstoring #{input_filepath} as #{output_filepath}", 2
         @zip_obj.put_next_entry(output_filepath, nil, nil, Zip::Entry::STORED, Zlib::NO_COMPRESSION)
         @zip_obj.write IO.read(input_filepath)
     end
