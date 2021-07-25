@@ -55,25 +55,44 @@ def unzip_cbz(zip_filename)
     temp_dir
 end
 
-def process_cbz_imgs(img_folder, writer)
-    # TODO: deal with subfolders, for now we were putting all the imgs in img/
-    # but later each subfolder should be copied to /img/sub/ and the first img
-    # from each subfolder should be the start of a chapter
-    # There is the case that instead the imgs are zipped inside of a folder
-    i = 1
-    log  "adding images to epub...", 1
-    Dir.entries(img_folder).each do |file|
-        extension = File.extname(file)
+def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
+    img_folder = Pathname.new(img_folder)
+    # TODO: make each chapter be in its own folder in the epub instead of
+    # the comic/img/, maybe comic/img/chapter/ or comic/chapter
         
-        next if File.directory? file
+    i = 1
+    found_chapters = false
+    Dir.entries(img_folder).each do |entry|
+        extension = File.extname(entry)
+        # TODO: maybe prevent from going doing within the filesystem after the first level of recursion?
+        # Pathname (even with #realpath) + #directory seems to always return false so we're sticking with file joining here
+        fullpath = File.join(img_folder, entry) 
+        if File.directory? fullpath
+            next if entry == '.' || entry == '..'
+            found_chapters = true
+            log "\tfolder '#{entry}' detected, considering it a chapter if any image is inside", 2
+            
+            folder_name = File.basename(entry)
+            process_cbz_imgs(fullpath, writer, entry, folder_name)
+            log '', 2
+            next
+        end
+
         unless ['.png', '.jpg', '.jpeg', '.gif'].include? extension
-            log "\tignoring non image file #{file}", 2
+            log "\tignoring non image file #{entry}", 2
             next
         end
         
+        # This assumes that #entries will order the folders first
+        # maybe anylize the img_folder before loop tru everythin
+        if found_chapters
+            log "\tlocated images that are not part of any chapter"
+            chapter_name = 'left over pages'
+        end
+
         add_to_toc = i == 1 ? true : false
-        full_path = File.join(img_folder, file)
-        writer.add_page(full_path, '', add_to_toc, 'Chapter Name')
+        full_path = File.join(img_folder, entry.to_s)
+        writer.add_page(full_path, '', add_to_toc, chapter_name)
         i += 1
     end
     writer
@@ -94,6 +113,7 @@ def create_epub(args)
     epub_temp_folder = create_structure
     zip_temp_dir = input_filename.directory? ? input_filename.to_s : unzip_cbz(input_filename)
 
+    log  "adding images to epub...", 1
     writer = OEBPSWiter.new(File.join(epub_temp_folder, 'OEBPS'))
     writer.set_manga_mode(args[:manga] || false)
     process_cbz_imgs(zip_temp_dir, writer)

@@ -63,10 +63,19 @@ class OEBPSWiter
     def add_page(image_path, destination='', insert_to_toc, toc_name)
         img_folder_name = 'imgs'
         img_name = File.basename(image_path)
-        xhtml_name = File.basename(img_name, File.extname(image_path)) + '.xhtml'
-        relative_to_comic_img_dest = File.join(self.comic_folder, img_folder_name, destination) # # comic/imgs/
-        relative_img_path = File.join(img_folder_name, img_name) # imgs/some-img
+        relative_to_comic_img_dest = File.join(self.comic_folder, img_folder_name, destination) # comic/imgs/
         
+        xhtml_name = File.basename(img_name, File.extname(image_path)) + '.xhtml' # /ch.xhtml
+        if destination != '' 
+            xhtml_name = File.join(destination, xhtml_name) # ch_name/ch.xhtml
+            relative_img_path = File.join('..', img_folder_name, destination, img_name) # ../imgs/ch_dir
+            
+            abs_path = File.join(@dest_dir, self.comic_folder, destination)
+            FileUtils.mkdir_p abs_path if !Dir.exists? abs_path
+        else     
+            relative_img_path = File.join(img_folder_name, img_name) # imgs/some-img
+        end
+
         self.add_img_file(image_path, relative_to_comic_img_dest)
         self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name)
     end
@@ -88,8 +97,6 @@ private
     end
 
     def create_img_rendition(name, img_path, should_to_toc, toc_name)
-        file_basename = File.basename(name)       
-        
         html = Nokogiri::XML($empty_img_html) 
         html.search('title').first.inner_html = toc_name
         html.search('img').first['src'] = img_path # img_path => imgs/some-img  
@@ -98,7 +105,7 @@ private
         file_obj = open(File.join(@dest_dir, self.comic_folder, name), 'a+')
         file_obj << html.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::NO_DECLARATION) # will preserve the original xml and doctype order
         
-        relative_path = File.join(self.comic_folder, file_basename)
+        relative_path = File.join(self.comic_folder, name)
         id = relative_path.gsub('/', '-').gsub('\\', '-')
         
         self.insert_to_manifest(File.extname(name), id, relative_path)
