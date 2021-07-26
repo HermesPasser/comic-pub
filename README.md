@@ -3,9 +3,11 @@
 
 comic-pub is simple and easy to use program to convert batch of images to epub when [others](https://github.com/ciromattia/kcc) solutions fail
 
+NOTE 1: if you is not planning to convert it to mobi then is better to stick with cbz/r if you e-reader support it.  
+
 # Usage
 
-``ruby main.rb <cbz|zip> [options]``
+``ruby main.rb <folder|cbz|zip> [options]``
 
  - ``-v, --verbose LEVEL`` How detailed is the logging. Range: \[0,3\]
  - ``-o, --output FILE`` Set non default output epub file name/location
