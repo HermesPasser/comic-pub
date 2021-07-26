@@ -92,7 +92,12 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
 
         add_to_toc = i == 1 ? true : false
         full_path = File.join(img_folder, entry.to_s)
-        writer.add_page(full_path, '', add_to_toc, chapter_name)
+
+        if chapter_name == '' # the image name as title if none was given
+            chapter_name = Pathname.new(full_path).basename.sub_ext('').to_s
+        end
+
+        writer.add_page(full_path, folder_name, add_to_toc, chapter_name)
         i += 1
     end
     writer
