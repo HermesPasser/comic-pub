@@ -7,7 +7,7 @@ comic-pub is simple and easy to use program to convert batch of images to epub w
 
 ``ruby main.rb <cbz|zip> [options]``
 
- - ``-v, --verbose LEVEL`` How detailed is the logging
+ - ``-v, --verbose LEVEL`` How detailed is the logging. Range: \[0,3\]
  - ``-o, --output FILE`` Set non default output epub file name/location
  - ``-h, --help`` Prints this message
  - ``-m`` Make the epub flow from right-to-left like a manga
