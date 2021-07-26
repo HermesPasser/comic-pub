@@ -13,7 +13,7 @@ MIMETYPES = {
     '.xhtml' => 'application/xhtml+xml'
 }
 
-class OEBPSWiter
+class OEBPSWriter
     def initialize(dest_oebps_dir, visible_toc=false)
         @content = Nokogiri::XML($temp_content_opf_content)
         @toc = Nokogiri::XML.fragment($temp_toc_content) #::HTML is too much of a pain
