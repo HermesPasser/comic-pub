@@ -16,6 +16,7 @@ NOTE 1: if you is not planning to convert it to mobi then is better to stick wit
  - ``--title NAME`` Set the epub title. The default is the input name
  - ``--mobi`` Convert to mobi and delete the .epub. Kindlegen must be in the program folder or PATH
  - ``--debug`` Temp directories are not deleted and created in pwd
+ - ``--toc`` Set the epub title
 
 # Requirements
 
