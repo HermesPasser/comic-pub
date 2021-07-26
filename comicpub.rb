@@ -38,7 +38,7 @@ def create_structure()
     #   comic/chapter_1.xhtml
     #   content.opf
     #   toc.xhtml
-    root_epub_dir = Dir.mktmpdir
+    root_epub_dir = temp_dir
     log("created temp dir #{root_epub_dir}", 3)
 
     create_mimetype(root_epub_dir)
@@ -49,10 +49,10 @@ def create_structure()
 end
 
 def unzip_cbz(zip_filename)
-    temp_dir = Dir.mktmpdir
+    tempdir = temp_dir
     # TODO: imgs may be inside of a root folder in the zip, deal with it
-    Zipper.unzip(zip_filename, temp_dir)
-    temp_dir
+    Zipper.unzip(zip_filename, tempdir)
+    tempdir
 end
 
 def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
@@ -135,7 +135,9 @@ def create_epub(args)
     epub_filename
 rescue => exception
     raise exception
-ensure  
-    FileUtils.rm_r epub_temp_folder if epub_temp_folder != nil
-    FileUtils.rm_r zip_temp_dir if !input_filename.directory? && zip_temp_dir != nil
+ensure
+    if !$local_temp_dir
+        FileUtils.rm_r epub_temp_folder if epub_temp_folder != nil
+        FileUtils.rm_r zip_temp_dir if !input_filename.directory? && zip_temp_dir != nil
+    end
 end
