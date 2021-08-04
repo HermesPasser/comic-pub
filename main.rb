@@ -75,7 +75,7 @@ rescue Errno::ENOENT
     puts('kindlegen could not be found. Be sure it is on the path or in this program folder')
 ensure
     r.close if r != nil
-    w.close if r != nil
+    w.close if w != nil
 end
 
 def main
