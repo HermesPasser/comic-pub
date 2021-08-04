@@ -48,7 +48,7 @@ class OEBPSWriter
         mode = is_manga ? 'horizontal-rl' : 'horizontal-lr'
         @content.xpath('//*[@name="primary-writing-mode"]').first['content'] = mode
 
-        @page_spread_direction = @@right_spread
+        @page_spread_direction = @@right_spread if is_manga
     end
 
     def set_metadata(args)
