@@ -13,7 +13,7 @@ Project status: [11/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
 
  - ``-v, --verbose LEVEL`` How detailed is the logging. Range: \[0,3\]
  - ``-o, --output FILE`` Set non default output epub file name/location
- - ``-h, --help`` Prints this message
+ - ``-h, --help`` Prints the contents of this section
  - ``-m`` Make the epub flow from right-to-left like a manga
  - ``--title NAME`` Set the epub title. The default is the input name
  - ``--mobi`` Convert to mobi and delete the .epub. Kindlegen must be in the program folder or PATH
