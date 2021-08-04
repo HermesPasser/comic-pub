@@ -18,7 +18,7 @@ Project status: [11/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
  - ``--title NAME`` Set the epub title. The default is the input name
  - ``--mobi`` Convert to mobi and delete the .epub. Kindlegen must be in the program folder or PATH
  - ``--debug`` Temp directories are not deleted and created in pwd
- - ``--toc`` Set the epub title
+ - ``--toc`` Adds a table of contents page at the end of the epub
 
 # Requirements
 
