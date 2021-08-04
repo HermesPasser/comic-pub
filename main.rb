@@ -79,7 +79,7 @@ ensure
 end
 
 def main
-    puts("Comic pub 0.1 - The poor man's comic to epub converter.\nBy Douglas S. Lacerda <hermespaser@gmail.com> under GPLv3\n")
+    puts("Comic pub 0.1 - The poor man's comic to epub converter.\nBy Douglas S. Lacerda <hermespasser@gmail.com> under GPLv3\n")
     ops = parse_args
 
     epub_name = create_epub(ops)
