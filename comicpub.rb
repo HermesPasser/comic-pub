@@ -3,7 +3,6 @@ require_relative './templates'
 require_relative './oebps'
 require 'fileutils'
 require 'pathname'
-require 'tmpdir'
 
 def create_mimetype(root_epub_dir)
     open(File.join(root_epub_dir, 'mimetype'), 'a+') do |f|
