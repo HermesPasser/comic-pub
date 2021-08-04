@@ -5,7 +5,7 @@ comic-pub is simple and easy to use program to convert batch of images to epub w
 
 NOTE 1: if you is not planning to convert it to mobi then is better to stick with cbz/r if you e-reader support it.  
 
-Project status: [11/16 features added](https://github.com/HermesPasser/comic-pub/issues/1)
+Project status: [11/17 tasks done](https://github.com/HermesPasser/comic-pub/issues/1)
 
 # Usage
 
