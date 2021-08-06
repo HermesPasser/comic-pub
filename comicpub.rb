@@ -59,7 +59,9 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
     img_folder = Pathname.new(img_folder)
     # TODO: make each chapter be in its own folder in the epub instead of
     # the comic/img/, maybe comic/img/chapter/ or comic/chapter
-        
+    
+    # FIXME: beware that 800MB is the mobi's image size limit
+
     i = 1
     found_chapters = false
     Dir.entries(img_folder).each do |entry|
