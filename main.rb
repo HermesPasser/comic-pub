@@ -55,6 +55,10 @@ def parse_args
 
 rescue OptionParser::InvalidOption => e
     kill_if "\n#{e}. Use -h for help"
+rescue OptionParser::InvalidArgument => ex
+    kill_if "Invalid argument '#{ex.args[1]}' for the option '#{ex.args[0]}'. Make sure the argument type is correct"
+rescue OptionParser::MissingArgument => exe
+    kill_if "Missing argument for the option '#{exe.args[0]}'. Use -h for more help"
 end
 
 def to_mobi(epub)
