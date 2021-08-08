@@ -39,7 +39,7 @@ def parse_args
         
         opt.on("-v", "--verbose LEVEL", Integer, "How detailed is the logging. Range: [0,3]") { |v| $verbosity_level = v }
         opt.on("-o", "--output FILE", "Set non default output epub file location") { |o| options[:output] = validate_output_file(o) }
-        opt.on("-m", "--m", "Make the epub flows from right-to-left like a manga") { |o| options[:manga] = o }
+        opt.on("-m", "Make the epub flows from right-to-left like a manga") { |o| options[:manga] = o }
         opt.on("--mobi", "Convert the epub to mobi. Kindlegen must be in the program folder or PATH") { |o| options[:mobi] = o }
         opt.on("--toc", "Includes the table of contents at the end") { |o| options[:toc] = o }
         opt.on("--title NAME", "Set the epub title") { |o| options[:title] = o }
