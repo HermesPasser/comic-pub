@@ -19,7 +19,7 @@ class OEBPSWriter
         @toc = Nokogiri::XML.fragment($temp_toc_content) #::HTML is too much of a pain
         @dest_dir = dest_oebps_dir # since were going to create files we need to know where
         @visible_toc = visible_toc
-
+        
         @@left_spread = 'page-spread-left'
         @@right_spread = 'page-spread-right'
         @page_spread_direction = @left_spread
@@ -75,32 +75,38 @@ class OEBPSWriter
         else     
             relative_img_path = File.join(img_folder_name, img_name) # imgs/some-img
         end
-
-        self.add_img_file(image_path, relative_to_comic_img_dest)
-        self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name)
+        
+        img = self.add_img_file(image_path, relative_to_comic_img_dest)
+        self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name, img)
     end
 
 private
     def add_img_file(filename, destination)
         file_basename = File.basename(filename)
         absolute_dest = File.join(@dest_dir, destination)
-        
+        absolute_path = File.join(absolute_dest, file_basename)
         log "\tadding #{filename} to the oebps/#{destination}", 2
         FileUtils.mkdir_p absolute_dest if !Dir.exists? absolute_dest
-        FileUtils.cp(filename, File.join(absolute_dest, file_basename))
-
+        FileUtils.cp(filename, absolute_path)
+        
         relative_path = File.join(destination, file_basename)
         self.insert_to_manifest(
                 File.extname(filename), 
                 relative_path.gsub('/', '-').gsub('\\', '-'), 
-                relative_path) 
+                relative_path)
+        return img
     end
 
-    def create_img_rendition(name, img_path, should_to_toc, toc_name)
+    def create_img_rendition(name, img_path, should_to_toc, toc_name, img_instance)
         html = Nokogiri::XML($empty_img_html) 
         html.search('title').first.inner_html = toc_name
-        html.search('img').first['src'] = img_path # img_path => imgs/some-img  
-        
+        img_attr = html.search('img').first
+        img_attr['src'] = img_path # img_path => imgs/some-img  
+                
+        img = Image.new(File.join(@dest_dir, comic_folder, img_path))
+        img_attr['width'] = img_instance.width
+        img_attr['height'] = img_instance.height
+         
         # create the file
         file_obj = open(File.join(@dest_dir, self.comic_folder, name), 'a+')
         file_obj << html.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::NO_DECLARATION) # will preserve the original xml and doctype order
@@ -111,8 +117,8 @@ private
         self.insert_to_manifest(File.extname(name), id, relative_path)
         self.insert_to_spine(id, true)
         self.insert_to_toc(relative_path, toc_name) if should_to_toc
-        ensure
-            file_obj.close if file_obj != nil
+    ensure
+        file_obj.close if file_obj != nil
     end
     
     def change_direction
