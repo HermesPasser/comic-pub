@@ -89,6 +89,14 @@ private
         FileUtils.mkdir_p absolute_dest if !Dir.exists? absolute_dest
         FileUtils.cp(filename, absolute_path)
         
+        # If the w > h then either rotate or split
+        img = Image.new(absolute_path)
+        if img.landscape?
+            log "\t\trotating landscaped image", 3
+            img.rotate(-90)
+            img.save!
+        end
+
         relative_path = File.join(destination, file_basename)
         self.insert_to_manifest(
                 File.extname(filename), 
