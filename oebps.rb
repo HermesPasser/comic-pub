@@ -1,4 +1,5 @@
 require_relative './templates'
+require_relative './image'
 require 'securerandom'
 require 'fileutils'
 require 'nokogiri'
