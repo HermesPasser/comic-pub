@@ -11,6 +11,26 @@ class Image
         Image.new(filename)
     end
 
+    def crop(x, y, w, h)
+        @img_obj.crop("#{w}x#{h}+#{x}+#{y}") # WxH+X+Y
+    end
+
+    def crop_left
+        # Removes the right side of the image
+
+        w = width / 2
+        h = height - 1
+        crop(0, 0, w, h)
+    end
+
+    def crop_right
+        # Removes the left side of the image
+
+        w = width / 2
+        h = height - 1
+        crop(w, 0, w, h)
+    end
+
     def landscape?
         @img_obj.landscape?
     end
