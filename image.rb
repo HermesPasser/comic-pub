@@ -6,6 +6,11 @@ class Image
         @img_obj = MiniMagick::Image.new(src)
     end
 
+    def copy(filename)
+        save(filename)
+        Image.new(filename)
+    end
+
     def landscape?
         @img_obj.landscape?
     end
