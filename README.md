@@ -24,6 +24,8 @@ Project status: [11/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
 
 * Ruby 3.0
 * Necessary gems listed in [Gemfile](Gemfile)
+* ImageMagick or GraphicsMagick in the program folder or PATH  
+* Kindlegen in the program folder or PATH (only needed if the option --mobi is given) 
 
 # License
 
