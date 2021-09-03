@@ -2,6 +2,7 @@ require_relative './templates'
 require 'securerandom'
 require 'fileutils'
 require 'nokogiri'
+require 'tempfile'
 require 'date'
 
 MIMETYPES = {
@@ -14,11 +15,12 @@ MIMETYPES = {
 }
 
 class OEBPSWriter
-    def initialize(dest_oebps_dir, visible_toc=false)
+    def initialize(dest_oebps_dir, visible_toc=false, split_images = :preserve)
         @content = Nokogiri::XML($temp_content_opf_content)
         @toc = Nokogiri::XML.fragment($temp_toc_content) #::HTML is too much of a pain
         @dest_dir = dest_oebps_dir # since were going to create files we need to know where
         @visible_toc = visible_toc
+        @landscape_mode = split_images
         
         @@left_spread = 'page-spread-left'
         @@right_spread = 'page-spread-right'
@@ -76,12 +78,24 @@ class OEBPSWriter
             relative_img_path = File.join(img_folder_name, img_name) # imgs/some-img
         end
         
-        img = self.add_img_file(image_path, relative_to_comic_img_dest)
-        self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name, img)
+        image_obj = Image.new(image_path)
+
+        # If the w > h then either rotate or split
+        # TODO: which side should a double page be?
+        # TODO: with :both set, the two split image
+        # will be on the wrong side. On the kindle seems
+        # ok but i'm not sure if the change something
+        # on a two screen e-reader 
+        if !image_obj.landscape? || (@landscape_mode == :both || @landscape_mode == :preserve)
+            self.add_img_file(image_path, relative_to_comic_img_dest, image_obj)
+            self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name, image_obj)
+        end
+
+        split_image(image_obj, image_path, destination='', insert_to_toc)
     end
 
 private
-    def add_img_file(filename, destination)
+    def add_img_file(filename, destination, image_obj)
         file_basename = File.basename(filename)
         absolute_dest = File.join(@dest_dir, destination)
         absolute_path = File.join(absolute_dest, file_basename)
@@ -89,12 +103,10 @@ private
         FileUtils.mkdir_p absolute_dest if !Dir.exists? absolute_dest
         FileUtils.cp(filename, absolute_path)
         
-        # If the w > h then either rotate or split
-        img = Image.new(absolute_path)
-        if img.landscape?
+        if image_obj.landscape?
             log "\t\trotating landscaped image", 3
             img.rotate(-90)
-            img.save!
+            image_obj.save!
         end
 
         relative_path = File.join(destination, file_basename)
@@ -102,7 +114,6 @@ private
                 File.extname(filename), 
                 relative_path.gsub('/', '-').gsub('\\', '-'), 
                 relative_path)
-        return img
     end
 
     def create_img_rendition(name, img_path, should_to_toc, toc_name, img_instance)
@@ -110,8 +121,6 @@ private
         html.search('title').first.inner_html = toc_name
         img_attr = html.search('img').first
         img_attr['src'] = img_path # img_path => imgs/some-img  
-                
-        img = Image.new(File.join(@dest_dir, comic_folder, img_path))
         img_attr['width'] = img_instance.width
         img_attr['height'] = img_instance.height
          
@@ -129,6 +138,29 @@ private
         file_obj.close if file_obj != nil
     end
     
+    def split_image(img, image_path, destination, insert_to_toc)
+        return if !img.landscape? || @landscape_mode == :preserve
+        
+        log "\t\tsplitting landscaped image", 3
+        pathname = Pathname.new(image_path)
+        stem = pathname.basename.sub_ext('').to_s
+        ext = pathname.extname.to_s
+        
+        # these files will have very long and ugly names
+        l_filename = Tempfile.new([ "#{stem}-l", ext ]).path.to_s
+        l = img.copy(l_filename)
+        l.crop_left
+        l.save!
+
+        r_filename = Tempfile.new([ "#{stem}-r", ext ]).path.to_s
+        r = img.copy(r_filename)
+        r.crop_right
+        r.save!
+        
+        add_page(l_filename, destination, insert_to_toc, "#{stem}-left")
+        add_page(r_filename, destination, insert_to_toc, "#{stem}-right")
+    end
+
     def change_direction
         @page_spread_direction = @page_spread_direction == @@left_spread ? @@right_spread : @@left_spread
     end
