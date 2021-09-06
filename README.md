@@ -13,7 +13,7 @@ Project status: [13/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
 
  - ``-v, --verbose LEVEL`` How detailed is the logging. Range: \[0,3\] (default 1)
  - ``-o, --output FILE`` Set non default output epub file name/location
- - ``-h, --help`` Prints the contents of this section
+ - ``-h, --help`` Print the contents of this section
  - ``-s, --split KIND`` How to handle double spread images
     * PRESERVE: rotate the image (default)
     * SPLIT: split the double spread in two and delete the original
