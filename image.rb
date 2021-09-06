@@ -43,8 +43,8 @@ class Image
         @img_obj.dimensions[1]
     end
 
-    def resize(percent)
-        @img_obj.resize("#{percent}%")
+    def resize(w, h)
+        @img_obj.resize("#{w}x#{h}")
     end
 
     def rotate(degrees)
