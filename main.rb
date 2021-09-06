@@ -44,7 +44,7 @@ def parse_args
         opt.on("--toc", "Includes the table of contents at the end") { |o| options[:toc] = o }
         opt.on("--title NAME", "Set the epub title") { |o| options[:title] = o }
         opt.on("--debug", "Temp directories are not deleted and created in pwd") { |o| $local_temp_dir = o }
-        opt.on("-s", "--split KIND" "How to handle landscape images. PRESERVE: leave the image; SPLIT: split the image in two; BOTH: leave and image and split it in two") do |o| 
+        opt.on("-s", "--split KIND" "How to handle double spread images. PRESERVE: rotate the image; SPLIT: split the image in two; BOTH: split the image in two but leave a copy rotated copy of the original image") do |o| 
 		    opts = { 'preserve' => :preserve, 'split' => :split, 'both' => :both }
 		    options[:split] = opts[o.downcase]
 	    end
