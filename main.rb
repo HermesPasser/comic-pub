@@ -74,7 +74,8 @@ def to_mobi(epub)
     pid = spawn('kindlegen', epub, [:in, :out, :err] => io)    
     Process.wait(pid)
 
-    if $?.exitstatus == 0
+    status = $?.exitstatus
+    if status == 0 || status == 1
         File.delete(epub)
     else
         puts('Something went wrong while converting to mobi with kindlegen')
