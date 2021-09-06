@@ -88,7 +88,7 @@ class OEBPSWriter
         # ok but i'm not sure if the change something
         # on a two screen e-reader 
         if !image_obj.landscape? || (@landscape_mode == :both || @landscape_mode == :preserve)
-            self.add_img_file(image_path, relative_to_comic_img_dest, image_obj)
+            self.add_img_file(image_path, relative_to_comic_img_dest)
             self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name, image_obj)
         end
 
@@ -96,7 +96,7 @@ class OEBPSWriter
     end
 
 private
-    def add_img_file(filename, destination, image_obj)
+    def add_img_file(filename, destination)
         file_basename = File.basename(filename)
         absolute_dest = File.join(@dest_dir, destination)
         absolute_path = File.join(absolute_dest, file_basename)
@@ -104,9 +104,10 @@ private
         FileUtils.mkdir_p absolute_dest if !Dir.exists? absolute_dest
         FileUtils.cp(filename, absolute_path)
         
+        image_obj = Image.new(File.join(absolute_dest, file_basename)) # rotate the image on the EPUB, not the original image
         if image_obj.landscape?
             log "\t\trotating landscaped image", 3
-            img.rotate(-90)
+            image_obj.rotate(-90)
             image_obj.save!
         end
 
