@@ -88,7 +88,8 @@ class OEBPSWriter
         # ok but i'm not sure if the change something
         # on a two screen e-reader 
         if !image_obj.landscape? || (@landscape_mode == :both || @landscape_mode == :preserve)
-            self.add_img_file(image_path, relative_to_comic_img_dest)
+            # update the instance with the rotated/rescaled one
+	    image_obj = self.add_img_file(image_path, relative_to_comic_img_dest)
             self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name, image_obj)
         end
 
@@ -116,6 +117,7 @@ private
                 File.extname(filename), 
                 relative_path.gsub('/', '-').gsub('\\', '-'), 
                 relative_path)
+	image_obj
     end
 
     def create_img_rendition(name, img_path, should_to_toc, toc_name, img_instance)
