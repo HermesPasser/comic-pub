@@ -28,6 +28,17 @@ class OEBPSWriter
         @page_spread_direction = @left_spread
     end
     
+    def set_cover(filename)
+	ext = File.extname(filename)
+	dest_folder = File.join(@dest_dir, comic_folder)
+        dest_filename = File.join(dest_folder , 'cover' + ext)
+	FileUtils.mkdir_p dest_folder if !Dir.exists? dest_folder
+        FileUtils.cp(filename, dest_filename)
+
+	node = insert_to_manifest(ext, 'cover', File.join(comic_folder , 'cover' + ext))
+	node['properties'] = 'cover-image'
+    end
+
     def comic_folder
         'comic'
     end

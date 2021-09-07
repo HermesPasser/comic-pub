@@ -18,6 +18,7 @@ $temp_content_opf_content = <<END
 		<dc:identifier id="uid">add</dc:identifier>
 
 		<meta id="cpub-modate" property="dcterms:modified">add</meta>
+		<meta name="cover" content="cover"/>
 		<meta name="fixed-layout" content="true" />
 		<meta name="book-type" content="comic" />
 		<meta name="primary-writing-mode" content="horizontal-lr" />

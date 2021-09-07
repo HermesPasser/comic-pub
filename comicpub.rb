@@ -4,6 +4,8 @@ require_relative './oebps'
 require 'fileutils'
 require 'pathname'
 
+$cover_added = false
+
 def create_mimetype(root_epub_dir)
     open(File.join(root_epub_dir, 'mimetype'), 'a+') do |f|
         f.write('application/epub+zip')
@@ -91,8 +93,14 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
             chapter_name = 'left over pages'
         end
 
-        add_to_toc = i == 1 ? true : false
+
+        add_to_toc = i == 1
         full_path = File.join(img_folder, entry.to_s)
+
+	    if $cover_added
+            writer.set_cover(full_path)
+	        $cover_added = true
+	    end
 
         if chapter_name == '' # the image name as title if none was given
             chapter_name = Pathname.new(full_path).basename.sub_ext('').to_s
