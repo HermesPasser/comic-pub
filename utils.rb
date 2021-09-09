@@ -1,4 +1,5 @@
 $verbosity_level = 1
+$log_stdout = $stdout
 $local_temp_dir = false
 
 def kill_if(text, condition=true)
@@ -18,5 +19,5 @@ def temp_dir
 end
 
 def log(text, level)
-    puts text if $verbosity_level >= level
+    $log_stdout << text if $verbosity_level >= level
 end
