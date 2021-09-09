@@ -1,28 +1,6 @@
 require_relative './comicpub'
+require_relative './utils'
 require 'optparse'
-
-$verbosity_level = 1
-$local_temp_dir = false
-
-def temp_dir
-    if $local_temp_dir 
-        dir = File.join(Dir.pwd, Time.new.usec.to_s)
-        Dir.mkdir dir
-        dir
-    else
-        Dir.mktmpdir
-    end
-end
-
-def log(text, level)
-    puts text if $verbosity_level >= level
-end
-
-def kill_if(text, condition=true)
-    return if !condition
-    puts(text)
-    exit(1)
-end
 
 def validate_output_file(path)
     path = Pathname.new(path)
