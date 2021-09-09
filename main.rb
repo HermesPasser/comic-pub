@@ -75,4 +75,19 @@ def main
     to_mobi(epub_name) if ops[:mobi]
 end
 
-main
+def try_import_ui 
+    found = true
+    require 'tk'
+rescue LoadError
+    found = false
+ensure
+    found
+end
+
+if __FILE__ == $0
+    if ARGV == [] && try_import_ui # if no arg is given and tk is installed then open the UI
+        load 'ui/main_win.rb'
+        exit
+    end
+    main
+end

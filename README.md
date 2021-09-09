@@ -27,9 +27,11 @@ Project status: [13/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
 # Requirements
 
 * Ruby 3.0
-* Necessary gems listed in [Gemfile](Gemfile)
+* Necessary gems listed in [Gemfile](Gemfile)*
 * ImageMagick or GraphicsMagick in the program folder or PATH  
 * Kindlegen in the program folder or PATH (only needed if the option --mobi is given) 
+
+*: tk is only necessary if you want to fire the graphical interface and you may need to instal tklib to get tk to work 
 
 # License
 
