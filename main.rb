@@ -30,9 +30,11 @@ def parse_args
     end.parse!
 
     # handle positional args
+    msg = 'No cbz/rar/folder provided'
+    kill_if(msg, ARGV == [])
     options[:filename] = fname = Pathname.new(ARGV.pop)
-    kill_if("No cbz/rar/folder provided", fname == nil)
-    kill_if("cbz/rar/folder does not exists", !File.exists?(fname) && !Dir.exists?(fname))
+    kill_if(msg, fname == nil)
+    kill_if('cbz/rar/folder does not exists', !File.exists?(fname) && !Dir.exists?(fname))
     options
 
 rescue OptionParser::InvalidOption => e
