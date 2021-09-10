@@ -19,9 +19,8 @@ def temp_dir
 end
 
 def log(text, level)
-    $log_stdout << text if $verbosity_level >= level
+    $log_stdout << text + "\n" if $verbosity_level >= level
 end
-
 
 def to_mobi(epub)
     log('converting to mobi...', 1)
