@@ -2,6 +2,7 @@ require_relative './callback_std'
 require_relative '../comicpub'
 require_relative '../utils'
 require 'pathname'
+require 'thread'
 require 'tk'
 
 module Window   
@@ -16,6 +17,7 @@ module Window
 
    def self.run
       self.init_component
+      # for anything that have to be print from another thread use this, otherwise use @@label_message.text
       $log_stdout = CallbackStd.new proc { |text| @@label_message.text = text }
       Tk.mainloop
    end
@@ -48,18 +50,20 @@ private
       args[:toc] = true if @@add_toc.bool
       # the name must not be global, or else all the files will be replaced
       # args[:output] = @output_filename if @output_filename != '' 
+      Thread.new do
+         files = @@convert_list.get(0, @@convert_list.size)
+         files.each do |file|
+            args[:filename] = Pathname.new(file)
 
-      files = @@convert_list.get(0, @@convert_list.size)
-      files.each do |file|
-         args[:filename] = Pathname.new(file)
+            $log_stdout << "Converting #{file}..."
 
-         $log_stdout << "Converting #{file}..."
-
-         epub_name = create_epub(args)
-         # rewrite to_mobi to the ui known if was successful
-         to_mobi(epub_name) if @@to_mobi.bool
-      end
-      self.end_conversion
+            epub_name = create_epub(args)
+            # rewrite to_mobi to the ui known if was successful
+            to_mobi(epub_name) if @@to_mobi.bool
+         end
+         self.end_conversion
+         $log_stdout << 'Convertion finished'
+      end  
    end
 
    def self.init_component
@@ -176,7 +180,7 @@ private
       ]
       filename = is_file ? Tk.getOpenFile('filetypes' => filetypes) : Tk.chooseDirectory
       @@convert_list.insert(0, filename) if filename != ''
-      $log_stdout << "#{filename} added"
+      @@label_message.text "#{filename} added"
    end
 
    def self.remove_item
@@ -184,9 +188,9 @@ private
       @@convert_list.delete(arr[0]) if arr != []
 
       if @@convert_list.size == 0
-         $log_stdout << @@strings[:no_files]
+         @@label_message.text = @@strings[:no_files]
       elsif arr != []
-         $log_stdout << "#{arr[0]} removed"
+         @@label_message.text = "#{arr[0]} removed"
       end
    end
 end
