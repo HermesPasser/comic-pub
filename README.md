@@ -23,6 +23,8 @@ Project status: [13/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
  - ``--mobi`` Convert to mobi and delete the .epub. Kindlegen must be in the program folder or PATH
  - ``--debug`` Temp directories are not deleted and created in pwd
  - ``--toc`` Adds a table of contents page at the end of the epub
+ - ``--list-profiles`` List all the available profiles and their sizes  
+ - ``-p, --profiles DEVICE`` Set the target device (will be used to resize larger images down to its size). --list-profiles will list all available profiles. (default no profile)  
 
 # Requirements
 

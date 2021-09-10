@@ -16,13 +16,16 @@ MIMETYPES = {
 }
 
 class OEBPSWriter
+    attr_writer :profile
+
     def initialize(dest_oebps_dir, visible_toc=false, split_images = :preserve)
         @content = Nokogiri::XML($temp_content_opf_content)
         @toc = Nokogiri::XML.fragment($temp_toc_content) #::HTML is too much of a pain
         @dest_dir = dest_oebps_dir # since were going to create files we need to know where
         @visible_toc = visible_toc
         @landscape_mode = split_images
-        
+        @profile = nil
+
         @@left_spread = 'page-spread-left'
         @@right_spread = 'page-spread-right'
         @page_spread_direction = @left_spread
@@ -117,11 +120,7 @@ private
         FileUtils.cp(filename, absolute_path)
         
         image_obj = Image.new(File.join(absolute_dest, file_basename)) # rotate the image on the EPUB, not the original image
-        if image_obj.landscape?
-            log "\t\trotating landscaped image", 3
-            image_obj.rotate(-90)
-            image_obj.save!
-        end
+        process_image(image_obj)
 
         relative_path = File.join(destination, file_basename)
         self.insert_to_manifest(
@@ -129,6 +128,21 @@ private
                 relative_path.gsub('/', '-').gsub('\\', '-'), 
                 relative_path)
 	image_obj
+    end
+
+    def process_image(image_obj)
+        if image_obj.landscape?
+            log "\t\trotating landscaped image", 3
+            image_obj.rotate(-90)
+        end
+
+        out_w, out_h = @profile || [image_obj.width, image_obj.height]
+        # out_w, out_h = $PROFILES['kindle1-10']
+        if image_obj.height > out_h
+            log "\t\tdownscaling the image to the device's size", 3
+            image_obj.resize(out_w, out_h)
+        end # TODO: if the image is too small, upscale it here
+        image_obj.save!
     end
 
     def create_img_rendition(name, img_path, should_to_toc, toc_name, img_instance)

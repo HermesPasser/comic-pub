@@ -129,6 +129,7 @@ def create_epub(args)
 
     log  "adding images to epub...", 1
     writer = OEBPSWriter.new(File.join(epub_temp_folder, 'OEBPS'), args[:toc] || false, args[:split] || :preserve)
+    writer.profile = args[:profile] if args[:profile]
     writer.set_manga_mode(args[:manga] || false)
     process_cbz_imgs(zip_temp_dir, writer)
     writer.set_metadata(:title => args[:title] || file_no_ext)

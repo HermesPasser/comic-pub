@@ -1,4 +1,5 @@
 require_relative './comicpub'
+require_relative './profiles'
 require_relative './utils'
 require 'optparse'
 
@@ -22,9 +23,15 @@ def parse_args
         opt.on("--toc", "Includes the table of contents at the end") { |o| options[:toc] = o }
         opt.on("--title NAME", "Set the epub title") { |o| options[:title] = o }
         opt.on("--debug", "Temp directories are not deleted and created in pwd") { |o| $local_temp_dir = o }
-        opt.on("-s", "--split KIND" "How to handle double spread images. PRESERVE: rotate the image; SPLIT: split the image in two; BOTH: split the image in two but leave a copy rotated copy of the original image") do |o| 
+        opt.on("-s", "--split KIND", "How to handle double spread images. PRESERVE: rotate the image; SPLIT: split the image in two; BOTH: split the image in two but leave a copy rotated copy of the original image") do |o| 
 		    opts = { 'preserve' => :preserve, 'split' => :split, 'both' => :both }
-		    options[:split] = opts[o.downcase]
+            options[:split] = opts[o.downcase]
+	    end
+        opt.on("--list-profiles", "List all the available profiles and their sizes") { |o| list_profiles && exit }
+        opt.on("-p", "--profile DEVICE", "Set the target device (will be used to resize larger images down to its size). --list-profiles will list all available profiles. (default no profile)") do |o| 
+            profile = $PROFILES[o.downcase]
+            kill_if("No profile '#{o}'. To list all profiles use --list-profiles command", profile == nil)
+		    options[:profile] = profile
 	    end
         opt.on("-h", "--help", "Prints this message") { |o| kill_if(opt.help) }
     end.parse!
