@@ -74,6 +74,28 @@ private
       @@label_message.text = 'Convertion aborted'
    end
 
+   def self.open_item(is_file)
+      filetypes = [
+         ['CBZ archives', '*.cbz'],
+         ['ZIP archives', '*.zip']
+      ]
+      filename = is_file ? Tk.getOpenFile('filetypes' => filetypes) : Tk.chooseDirectory
+      @@convert_list.insert(0, filename) if filename != ''
+      @@label_message.text "#{filename} added"
+   end
+
+   def self.remove_item
+      arr = @@convert_list.curselection
+      @@convert_list.delete(arr[0]) if arr != []
+
+      if @@convert_list.size == 0
+         @@label_message.text = @@strings[:no_files]
+      elsif arr != []
+         @@label_message.text = "#{arr[0]} removed"
+      end
+   end
+
+   
    def self.init_component
       main_frame = TkFrame.new.pack
       frame_left = TkFrame.new(main_frame) do
@@ -178,27 +200,6 @@ private
          tristatevalue 2
          anchor 'w'
          pack
-      end
-   end
-
-   def self.open_item(is_file)
-      filetypes = [
-         ['CBZ archives', '*.cbz'],
-         ['ZIP archives', '*.zip']
-      ]
-      filename = is_file ? Tk.getOpenFile('filetypes' => filetypes) : Tk.chooseDirectory
-      @@convert_list.insert(0, filename) if filename != ''
-      @@label_message.text "#{filename} added"
-   end
-
-   def self.remove_item
-      arr = @@convert_list.curselection
-      @@convert_list.delete(arr[0]) if arr != []
-
-      if @@convert_list.size == 0
-         @@label_message.text = @@strings[:no_files]
-      elsif arr != []
-         @@label_message.text = "#{arr[0]} removed"
       end
    end
 end
