@@ -14,6 +14,7 @@ module Window
    @@to_mobi = TkVariable.new(false)
    @@output_filename = ''
    @@strings = { :no_files => 'No selected files' }
+   @@worker_thread = nil
 
    def self.run
       self.init_component
@@ -32,7 +33,6 @@ private
       @@convert_btn.state = 'normal'
       @@abort_btn.state = 'disabled'
       self.clear_items
-      $log_stdout << 'Convertion finished'
    end
 
    def self.clear_items
@@ -64,6 +64,14 @@ private
          self.end_conversion
          $log_stdout << 'Convertion finished'
       end  
+   end
+
+   def self.abort_conversion
+      return if @@worker_thread == nil
+      @@worker_thread.kill
+      @@worker_thread = nil
+      self.end_conversion
+      @@label_message.text = 'Convertion aborted'
    end
 
    def self.init_component
@@ -140,7 +148,7 @@ private
 
       @@abort_btn = TkButton.new(button_frame) do
          text 'Abort'
-         command 'exit'
+         command proc{ Window::abort_conversion }
          state 'disabled'
          pack 'side' => 'right'
       end
