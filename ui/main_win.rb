@@ -51,6 +51,7 @@ private
       args[:profile] = @@selected_device if @@selected_device != nil
       args[:manga] = true if @@manga_mode.bool
       args[:toc] = true if @@add_toc.bool
+
       # the name must not be global, or else all the files will be replaced
       # args[:output] = @output_filename if @output_filename != '' 
       Thread.new do
@@ -97,7 +98,6 @@ private
          @@label_message.text = "#{arr[0]} removed"
       end
    end
-
    
    def self.device_menu_click(device)
       @@selected_device = device == 'none' ? nil : $PROFILES[device]
@@ -125,16 +125,9 @@ private
       @@root.menu(menu_bar)
    end
 
-   def self.init_component
-      main_frame = TkFrame.new.pack
+   def self.init_left_frame(main_frame)
       frame_left = TkFrame.new(main_frame) do
          pack('side' => 'left', 'fill' => 'y')
-      end
-
-      self.init_menu
-
-      frame_right = TkFrame.new(main_frame)  do
-         pack('side' => 'right', 'fill' => 'y')
       end
 
       @@label_message = TkLabel.new do
@@ -166,9 +159,16 @@ private
 
       # TODO: Enable when is it possible to edit each entry alone
       @@convert_list = TkListbox.new(frame_left).pack('fill' => 'both')
+   end
+
+   def self.init_right_frame(main_frame)
+      frame_right = TkFrame.new(main_frame)  do
+         pack('side' => 'right', 'fill' => 'y')
+      end
 
       TkLabel.new(frame_right) { text 'Output file' }.pack
       entry_output = TkEntry.new(frame_right).state('disabled').pack
+
       label_frame = TkLabelFrame.new(frame_right).text("Double spread handling").pack
       check_manga = TkCheckButton.new(frame_right) do
          text 'Manga mode (right-to-left)'
@@ -232,6 +232,14 @@ private
          anchor 'w'
          pack
       end
+   end
+
+   def self.init_component
+      self.init_menu
+
+      main_frame = TkFrame.new.pack
+      self.init_left_frame(main_frame)
+      self.init_right_frame(main_frame)
    end
 end
 
