@@ -6,7 +6,7 @@ require 'pathname'
 require 'thread'
 require 'tk'
 
-module Window   
+class Window
    @@root = TkRoot.new 
    @@root.title 'Comic-pub'
    @@split_value = TkVariable.new('PRESERVE')
