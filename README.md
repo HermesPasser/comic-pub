@@ -9,6 +9,8 @@ Project status: [14/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
 
 # Usage
 
+## CLI
+
 ``ruby main.rb <folder|cbz|zip> [options]``
 
  - ``-v, --verbose LEVEL`` How detailed is the logging. Range: \[0,3\] (default 1)
@@ -25,6 +27,13 @@ Project status: [14/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
  - ``--toc`` Adds a table of contents page at the end of the epub
  - ``--list-profiles`` List all the available profiles and their sizes  
  - ``-p, --profiles DEVICE`` Set the target device (will be used to resize larger images down to its size). --list-profiles will list all available profiles. (default no profile)  
+ ## GUI
+ 
+ To use the graphical user interface you have to launch the program without arguments (or double-click the main file if you OS is set to open .rb files with ruby). Note that you need to have tk bidings gem and the TkLib installed*  
+ 
+``ruby main.rb``
+
+*: tklib is not needed on windows since the bidings will came with the required files  
 
 # Requirements
 
