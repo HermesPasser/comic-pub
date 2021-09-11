@@ -1,5 +1,6 @@
 require_relative './callback_std'
 require_relative '../comicpub'
+require_relative '../profiles'
 require_relative '../utils'
 require 'pathname'
 require 'thread'
@@ -13,6 +14,7 @@ module Window
    @@add_toc = TkVariable.new(false)
    @@to_mobi = TkVariable.new(false)
    @@output_filename = ''
+   @@selected_device = nil
    @@strings = { :no_files => 'No selected files' }
    @@worker_thread = nil
 
@@ -46,6 +48,7 @@ private
       self.start_conversion
 
       args = {}
+      args[:profile] = @@selected_device if @@selected_device != nil
       args[:manga] = true if @@manga_mode.bool
       args[:toc] = true if @@add_toc.bool
       # the name must not be global, or else all the files will be replaced
@@ -96,11 +99,39 @@ private
    end
 
    
+   def self.device_menu_click(device)
+      @@selected_device = device == 'none' ? nil : $PROFILES[device]
+   end
+
+   def self.init_menu
+      # using a menu since i can't import tkextlib/bwidget for some reason
+      file_menu = TkMenu.new(@@root, 'tearoff' => 'off')
+      file_menu.add('command', 'label' => 'Exit', 'command' => 'exit' )
+      device_menu = TkMenu.new(@@root, 'tearoff' => 'off')
+      tk_variable = TkVariable.new('none')
+
+      add_device = Proc.new do |device, _|
+         device_menu.add('radiobutton', 'label' => device, 'variable' => tk_variable, 
+            'command' => proc { Window::device_menu_click(device) })
+      end
+
+      add_device.call('none')
+      $PROFILES.each { |device, _| add_device.call(device) }
+
+      menu_bar = TkMenu.new
+      menu_bar.add('cascade','menu' => file_menu, 'label' => "File")
+      menu_bar.add('cascade','menu' => device_menu, 'label' => "Device")
+
+      @@root.menu(menu_bar)
+   end
+
    def self.init_component
       main_frame = TkFrame.new.pack
       frame_left = TkFrame.new(main_frame) do
          pack('side' => 'left', 'fill' => 'y')
       end
+
+      self.init_menu
 
       frame_right = TkFrame.new(main_frame)  do
          pack('side' => 'right', 'fill' => 'y')
