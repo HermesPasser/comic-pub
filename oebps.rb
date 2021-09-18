@@ -94,7 +94,8 @@ class OEBPSWriter
         end
         
         image_obj = Image.new(image_path)
-
+		copy_img = nil
+		
         # If the w > h then either rotate or split
         # TODO: which side should a double page be?
         # TODO: with :both set, the two split image
@@ -102,12 +103,17 @@ class OEBPSWriter
         # ok but i'm not sure if the change something
         # on a two screen e-reader 
         if !image_obj.landscape? || (@landscape_mode == :both || @landscape_mode == :preserve)
+			# we copy the image before processing it since add_img_file will call the function
+			# that rotates the image, but we still need a copy to split
+			if @landscape_mode == :both
+				copy_img = image_obj.copy(Tempfile.new(img_name).path.to_s)
+			end
             # update the instance with the rotated/rescaled one
-	    image_obj = self.add_img_file(image_path, relative_to_comic_img_dest)
+			image_obj = self.add_img_file(image_path, relative_to_comic_img_dest)
             self.create_img_rendition(xhtml_name, relative_img_path, insert_to_toc, toc_name, image_obj)
         end
 
-        split_image(image_obj, image_path, destination='', insert_to_toc)
+        split_image(copy_img || image_obj, image_path, destination='', insert_to_toc)
     end
 
 private
