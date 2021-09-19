@@ -35,6 +35,9 @@ Project status: [14/17 tasks done](https://github.com/HermesPasser/comic-pub/iss
 
 *: tklib is not needed on windows since the bidings will came with the required files  
 
+Most (but not all) features from the cli can work on the gui with the addition of batch conversion.   
+![comic-pub's graphical user interface](https://i.imgur.com/Gcbc9uA.png)
+
 # Requirements
 
 * Ruby 3.0
