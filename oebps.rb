@@ -24,6 +24,7 @@ class OEBPSWriter
         @dest_dir = dest_oebps_dir # since were going to create files we need to know where
         @visible_toc = visible_toc
         @landscape_mode = split_images
+		@manga_mode = false
         @profile = nil
 
         @@left_spread = 'page-spread-left'
@@ -57,7 +58,9 @@ class OEBPSWriter
     end
 
     def set_manga_mode(is_manga)
-        # epub trickery
+		@manga_mode = is_manga
+        
+		# epub trickery
         mode = is_manga ? 'rtl' : 'ltr' 
         @content.search('spine').first['page-progression-direction'] = mode
         
@@ -192,8 +195,13 @@ private
         r.crop_right
         r.save!
         
-        add_page(l_filename, destination, insert_to_toc, "#{stem}-left")
-        add_page(r_filename, destination, insert_to_toc, "#{stem}-right")
+		if @manga_mode
+			add_page(r_filename, destination, insert_to_toc, "#{stem}-1right")
+			add_page(l_filename, destination, insert_to_toc, "#{stem}-2left")
+		else
+			add_page(l_filename, destination, insert_to_toc, "#{stem}-1left")
+			add_page(r_filename, destination, insert_to_toc, "#{stem}-2right")
+		end
     end
 
     def change_direction
