@@ -66,7 +66,7 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
     i = 1
     found_chapters = false
     Dir.entries(img_folder).each do |entry|
-        extension = File.extname(entry)
+        extension = File.extname(entry).downcase
         # TODO: maybe prevent from going doing within the filesystem after the first level of recursion?
         # Pathname (even with #realpath) + #directory seems to always return false so we're sticking with file joining here
         fullpath = File.join(img_folder, entry) 
