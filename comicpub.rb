@@ -97,7 +97,7 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
         add_to_toc = i == 1
         full_path = File.join(img_folder, entry.to_s)
 
-	    if $cover_added
+	    if !$cover_added
             writer.set_cover(full_path)
 	        $cover_added = true
 	    end
