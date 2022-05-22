@@ -65,18 +65,18 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
 
     i = 1
     found_chapters = false
-    Dir.entries(img_folder).each do |entry|
-        extension = File.extname(entry).downcase
+    Pathname.new(img_folder).children.each do |entry|
+		fullpath = entry.expand_path
+        extension = entry.extname.downcase
+
         # TODO: maybe prevent from going doing within the filesystem after the first level of recursion?
-        # Pathname (even with #realpath) + #directory seems to always return false so we're sticking with file joining here
-        fullpath = File.join(img_folder, entry) 
-        if File.directory? fullpath
-            next if entry == '.' || entry == '..'
-            found_chapters = true
+
+		if entry.directory?
+			found_chapters = true
             log "\tfolder '#{entry}' detected, considering it a chapter if any image is inside", 2
             
-            folder_name = File.basename(entry)
-            process_cbz_imgs(fullpath, writer, entry, folder_name)
+            folder_name = entry.basename.to_s
+            process_cbz_imgs(fullpath.to_s, writer, folder_name, folder_name)
             log '', 2
             next
         end
@@ -93,20 +93,18 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
             chapter_name = 'left over pages'
         end
 
-
         add_to_toc = i == 1
-        full_path = File.join(img_folder, entry.to_s)
-
+		
 	    if !$cover_added
-            writer.set_cover(full_path)
+            writer.set_cover(fullpath)
 	        $cover_added = true
 	    end
 
         if chapter_name == '' # the image name as title if none was given
-            chapter_name = Pathname.new(full_path).basename.sub_ext('').to_s
+            chapter_name = entry.basename('.*').to_s
         end
 
-        writer.add_page(full_path, folder_name, add_to_toc, chapter_name)
+        writer.add_page(fullpath, folder_name, add_to_toc, chapter_name)
         i += 1
     end
     writer
