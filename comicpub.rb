@@ -89,7 +89,7 @@ def process_cbz_imgs(img_folder, writer, chapter_name = '', folder_name = '')
         # This assumes that #entries will order the folders first
         # maybe anylize the img_folder before loop tru everything
         if found_chapters
-            log "\tlocated images that are not part of any chapter"
+            log "\tlocated images that are not part of any chapter", 2
             chapter_name = 'left over pages'
         end
 
